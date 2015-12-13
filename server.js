@@ -1,8 +1,10 @@
 var PORT = 8080,
     URL = 'mongodb://localhost:27017/voting',
     SESSION_KEY = 'ThisIsN0tAKeyStup0d',
+    BCRIPT_COST = 8,
     mongo = require('mongodb').MongoClient,
     objectID=require('mongodb').ObjectID,
+    bcrypt = require('bcrypt'),
     passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
     bodyparser = require('body-parser'),
@@ -35,7 +37,6 @@ app.post('/register', function (req, res) {
         res.send("Password cannot be empty!");
         return;
     }
-    var userObject = {username: user, password: pass};
     mongo.connect(URL, function(err, db) {
         if (err) { throw err; }
         var collection = db.collection('users');
@@ -47,15 +48,21 @@ app.post('/register', function (req, res) {
                     res.send("User " + user + " already exists!");
                     db.close();
                 } else {
-                    collection.insert(userObject, function(err, data){
-                    if (err) {
-                        res.send("Error! " + err);
-                        db.close();
-                        throw err;
-                    }
-                    console.log("User added as " + JSON.stringify(data));
-                    res.send("User added as " + JSON.stringify(data));
-                    db.close();
+                    bcrypt.hash(pass, BCRIPT_COST, function(err, hash) {
+                        if (err) {
+                            throw err;
+                        }
+                        var userObject = {username: user, password: hash};
+                        collection.insert(userObject, function(err, data){
+                            if (err) {
+                                res.send("Error! " + err);
+                                db.close();
+                                throw err;
+                            }
+                            console.log("User added as " + JSON.stringify(data));
+                            res.send("User added as " + JSON.stringify(data));
+                            db.close();
+                        });
                     });
                 }
             }
@@ -104,11 +111,16 @@ passport.use(new LocalStrategy(
                 if (err) { return done(err); }
                 if (!user) {
                     return done(null, false, { message: 'Incorrect username.' });
+                } else {
+                    bcrypt.compare(password, user.password, function(err, res) {
+                        if (err) { throw err; }
+                        if (res) {
+                            return done(null, user);
+                        } else {
+                            return done(null, false, { message: 'Incorrect password.' });
+                        }
+                    });
                 }
-                if (user.password != password) {
-                    return done(null, false, { message: 'Incorrect password.' });
-                }
-                return done(null, user);
             });
         });
     }
