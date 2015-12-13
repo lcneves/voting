@@ -20,40 +20,20 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         <!-- AngularJS -->
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <!-- My login script -->
+        <script src="script/login.js"></script>
+        <!-- My voting main script -->
+        <script src="script/voting.js"></script>
         <style>
-            form {
-                margin: 2em;
-            }
         </style>
         <script>
         </script>
     </head>
     <body>
-        <form name="register-form" action="/register" method="post">
-            <div>
-                <label>Username:</label>
-                <input type="text" name="username"/>
+        <div ng-app="votingModule">
+            <div ng-controller="MainController">
+                <p>{{status}}</p>
             </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" name="password"/>
-            </div>
-            <div>
-                <input type="submit" value="Register"/>
-            </div>
-        </form>
-        <form name="login-form" action="/login" method="post">
-            <div>
-                <label>Username:</label>
-                <input type="text" name="username"/>
-            </div>
-            <div>
-                <label>Password:</label>
-                <input type="password" name="password"/>
-            </div>
-            <div>
-                <input type="submit" value="Log In"/>
-            </div>
-        </form>
+        </div>
     </body>
 </html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <!-- jQuery UI and Smoothness -->
+        <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+        <link rel="stylesheet" type="text-css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.min.css" media="screen" />
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <!-- Animate.css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css" />
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <!-- Bootstrap JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <!-- AngularJS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+        <!-- My login script -->
+        <script src="script/login.js"></script>
+        <style>
+            form {
+                margin: 2em;
+            }
+        </style>
+        <script>
+            $(document).ready(function() {
+                $("#logout-button").click(function() {
+                    $.post("logout", function(data) {
+                        window.location.href = "/";
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div ng-app="loginModule">
+            <form name="register-form" ng-controller="RegisterController" ng-submit="register()">
+                <div>
+                    <label>Username:</label>
+                    <input type="text" name="username" ng-model="user.username"/>
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input type="password" name="password" ng-model="user.password"/>
+                </div>
+                <div>
+                    <input type="submit" value="Register"/>
+                </div>
+                <div>
+                    <p>{{message}}</p>
+                </div>
+            </form>
+            
+            <form name="login-form" ng-controller="LoginController" ng-submit="login()">
+                <div>
+                    <label>Username:</label>
+                    <input type="text" name="username" ng-model="user.username"/>
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input type="password" name="password" ng-model="user.password"/>
+                </div>
+                <div>
+                    <input type="submit" value="Log in"/>
+                </div>
+                <div>
+                    <p>{{message}}</p>
+                    <p>{{status}}</p>
+                    <button id="logout-button" type="button">Log out</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
