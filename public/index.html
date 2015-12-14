@@ -31,8 +31,9 @@
     </head>
     <body>
         <div ng-app="votingModule">
+            <div ng-include="'login-strip.html'"></div>
             <div ng-controller="MainController">
-                <p>{{status}}</p>
+                <p>{{user}}</p>
             </div>
         </div>
     </body>

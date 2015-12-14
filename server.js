@@ -26,7 +26,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.post('/register', function (req, res) {
-    console.log(req.body);
     var user = req.body.username;
     var pass = req.body.password;
     if (user == "") {
@@ -59,8 +58,7 @@ app.post('/register', function (req, res) {
                                 db.close();
                                 throw err;
                             }
-                            console.log("User added as " + JSON.stringify(data));
-                            res.send("User added as " + JSON.stringify(data));
+                            res.send(true);
                             db.close();
                         });
                     });
@@ -78,7 +76,6 @@ app.post('/login', function (req, res) {
         }
         if (user) {
             req.logIn(user, function() {
-                console.log('req.logIn: err = ' + err + '. user = ' + JSON.stringify(user));
                 res.status(200).send(user);
             });
         }
@@ -92,12 +89,11 @@ app.post('/check', function (req, res) {
     if (req.user) {
         res.send(req.user.username);
     } else {
-        res.send(null);
+        res.send(false);
     }
 });
 
 app.post('/logout', function (req, res) {
-    console.log('Got logout!');
     req.logout();
     res.send('Logout');
 });
@@ -148,11 +144,6 @@ passport.deserializeUser(function(id, done) {
             }
         });
     });
-});
-
-app.get('/users', function(req, res) {
-//    res.send('Welcome, ' + req.user.username);
-    res.send('Welcome!');
 });
 
 app.listen(PORT);

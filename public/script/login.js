@@ -2,14 +2,10 @@
     var app = angular.module('loginModule', []);
     app.factory('loginStatus', function() {
         var service = {};
-        service.data = '';
         service.getLogin = function() {
             return jQuery.post("check", function(data) {
-                if (data) {
-                    service.data = "Logged in as " + data;
-                } else {
-                    service.data = "Not logged in";
-                }
+                hasCheckedLogin = true;
+                service.data = username = data;
                 return service.data;
             });
         };
@@ -20,28 +16,46 @@
             username: '',
             password: ''
         };
-        $scope.message = "Message!";
+        $scope.message = "";
         $scope.register = function() {
-            jQuery.post("register", $scope.user, function(data) {
-                $scope.message = data;
-                $scope.user = {
-                    username: '',
-                    password: ''
-                };
-                $scope.$apply();
+            var enteredUser = JSON.parse(JSON.stringify($scope.user));
+            jQuery.post("register", enteredUser, function(data) {
+                if (data === true) {
+                    jQuery.post("login", enteredUser, function(data) {
+                        window.location.href = "/";
+                    });
+                } else {
+                    $scope.message = data;
+                    $scope.user = {
+                        username: '',
+                        password: ''
+                    };
+                    $scope.$apply();
+                }
             });
         };
     }]);
-    app.controller('LoginController', ['$scope', 'loginStatus', function($scope, loginStatus) {
+    
+    app.controller('StatusController', ['$scope', 'loginStatus', function($scope, loginStatus) {
+        $scope.receivedLogin = false;
+        $scope.isLogged = false;
+        $scope.user = '';
+        loginStatus.getLogin().then(function() {
+            $scope.receivedLogin = true;
+            if (loginStatus.data) {
+                $scope.user = loginStatus.data;
+                $scope.isLogged = true;
+            }
+            $scope.$apply();
+        });
+    }]);
+    
+    app.controller('LoginController', ['$scope', function($scope) {
         $scope.user = {
             username: '',
             password: ''
         };
-        $scope.message = "Message!";
-        loginStatus.getLogin().then(function() {
-            $scope.status = loginStatus.data;
-            $scope.$apply();
-        });
+        $scope.message = "";
         $scope.login = function() {
             jQuery.post("login", $scope.user, function(data) {
                 $scope.user = {
