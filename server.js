@@ -28,12 +28,26 @@ app.use(passport.session());
 app.post('/register', function (req, res) {
     var user = req.body.username;
     var pass = req.body.password;
+    var passRepeat = req.body.passwordRepeat;
+    var name = req.body.realname;
     if (user == "") {
-        res.send("Username cannot be empty!");
+        res.send("Username cannot be empty");
         return;
     }
     if (pass == "") {
-        res.send("Password cannot be empty!");
+        res.send("Password cannot be empty");
+        return;
+    }
+    if (passRepeat == "") {
+        res.send("Please repeat the password");
+        return;
+    }
+    if (name == "") {
+        res.send("Please enter your name");
+        return;
+    }
+    if (pass != passRepeat) {
+        res.send("Passwords do not match");
         return;
     }
     mongo.connect(URL, function(err, db) {
@@ -44,17 +58,17 @@ app.post('/register', function (req, res) {
             function(err, document) {
                 if (err) { throw err; }
                 if (document) {
-                    res.send("User " + user + " already exists!");
+                    res.send("User " + user + " already exists");
                     db.close();
                 } else {
                     bcrypt.hash(pass, BCRIPT_COST, function(err, hash) {
                         if (err) {
                             throw err;
                         }
-                        var userObject = {username: user, password: hash};
+                        var userObject = {username: user, password: hash, realname: name};
                         collection.insert(userObject, function(err, data){
                             if (err) {
-                                res.send("Error! " + err);
+                                res.send("Server error!");
                                 db.close();
                                 throw err;
                             }
@@ -87,7 +101,15 @@ app.post('/login', function (req, res) {
 
 app.post('/check', function (req, res) {
     if (req.user) {
-        res.send(req.user.username);
+        res.send(req.user.realname);
+    } else {
+        res.send(false);
+    }
+});
+
+app.post('/new-poll', function (req, res) {
+    if (true) {
+        res.send({message: 'Poll submitted!'});
     } else {
         res.send(false);
     }

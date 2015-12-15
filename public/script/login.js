@@ -14,7 +14,9 @@
     app.controller('RegisterController', ['$scope', function($scope) {
         $scope.user = {
             username: '',
-            password: ''
+            password: '',
+            passwordRepeat: '',
+            realname: ''
         };
         $scope.message = "";
         $scope.register = function() {
@@ -26,10 +28,8 @@
                     });
                 } else {
                     $scope.message = data;
-                    $scope.user = {
-                        username: '',
-                        password: ''
-                    };
+                    $scope.user.password = '';
+                    $scope.user.passwordRepeat = '';
                     $scope.$apply();
                 }
             });
@@ -58,10 +58,7 @@
         $scope.message = "";
         $scope.login = function() {
             jQuery.post("login", $scope.user, function(data) {
-                $scope.user = {
-                    username: '',
-                    password: ''
-                };
+                $scope.user.password = '';
                 if (data.message) {
                     $scope.message = data.message;
                     $scope.$apply();

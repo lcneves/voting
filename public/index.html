@@ -25,15 +25,93 @@
         <!-- My voting main script -->
         <script src="script/voting.js"></script>
         <style>
+            #control-buttons {
+                text-align: center;
+                margin: 1em auto;
+                max-width: 50em;
+            }
+            .control-button {
+                margin: 0.4em;
+            }
+            #poll-form-panel {
+                max-width: 50em;
+                margin: auto;
+                display: none;
+                position: relative;
+                animation-duration: 0.7s;
+            }
+            #form-submit-div {
+                text-align: center;
+            }
+            #poll-question {
+                font-size: 130%;
+                height: 2.7em;
+            }
         </style>
         <script>
+                $(document).ready(function() {
+                    $("#my-polls-pill").click(function() {
+                        $("#my-polls-pill").addClass("active");
+                        $("#add-polls-pill").removeClass("active");
+                        $("#poll-form-panel").css('z-index', '-1').removeClass("animated fadeInDown").addClass("animated fadeOutUp");
+                        window.setTimeout(function() {
+                            $("#poll-form-panel").removeClass("animated fadeOutUp").css('display', 'none');
+                        }, 700);
+                    });
+                    $("#add-polls-pill").click(function() {
+                        $("#add-polls-pill").addClass("active");
+                        $("#my-polls-pill").removeClass("active");
+                        $("#poll-form-panel").css({'display': 'block', 'z-index': '-1'}).addClass("animated fadeInDown");
+                        window.setTimeout(function() {
+                            $("#poll-form-panel").css('z-index', '0');
+                        }, 700);
+                    });
+                });
         </script>
     </head>
     <body>
         <div ng-app="votingModule">
             <div ng-include="'login-strip.html'"></div>
             <div ng-controller="MainController">
-                <p>{{user}}</p>
+                <div id="loading" ng-show="!receivedLogin">
+                    <h4>Loading, please wait...</h4>
+                </div>
+                <div id="not-logged" ng-show="receivedLogin && !isLogged">
+                    <h4>Not logged in.</h4>
+                </div>
+                <div id="logged" ng-show="isLogged">
+                    <div id="control-buttons">
+                        <ul class="nav nav-pills nav-success nav-justified">
+                            <li id="my-polls-pill" role="presentation" class="active"><a href="#">My polls</a></li>
+                            <li id="add-polls-pill" role="presentation"><a href="#">Add new poll</a></li>
+                        </ul>
+                    </div>
+                    <div id="poll-form-panel" class="panel panel-info">
+                        <div class="panel-heading"><h4>New poll</h4></div>
+                        <div class="panel-body">
+                            <form name="poll-form" ng-controller="PollFormController" ng-submit="submit()">
+                                <div class="form-group">
+                                    <label class="sr-only" for="poll-question">Question:</label>
+                                    <input id="poll-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
+                                </div>
+                                <div class="form-group" ng-repeat="option in form.options">
+                                    <label class="sr-only" for="poll-option">Option:</label>
+                                    <input class="form-control" type="text" name="poll-option" ng-model="option.name" placeholder="Option"/>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-default btn-block" ng-click="addOption()">Add option</button>
+                                </div>
+                                <div id="form-submit-div" class="form-group">
+                                    <button type="button" class="btn btn-warning" ng-click="reset()">Clear</button>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </div>
+                                <div>
+                                    <p class="error-message">{{message}}</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
