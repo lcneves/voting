@@ -12,6 +12,9 @@ var PORT = 8080,
     express = require('express'),
     app = express();
 
+// Testing requirements
+var util = require('util');
+
 app.use(bodyparser.urlencoded({extended: false}));
 app.use(express.static('public'));
 app.use(session({
@@ -108,11 +111,63 @@ app.post('/check', function (req, res) {
 });
 
 app.post('/new-poll', function (req, res) {
-    if (true) {
-        res.send({message: 'Poll submitted!'});
-    } else {
-        res.send(false);
-    }
+	console.log(util.inspect(req));
+	var questionString = req.body.question;
+	if (questionString == ''){
+		res.send({
+			error: true,
+			message: "Your poll needs a question"
+		});
+		return;
+	}
+	var userID;
+	if (req.user) { userID = objectID(req.user._id); }
+	else {
+		res.send({
+			error: true,
+			message: "User is not authenticated. Please log in!"
+		});
+		return;
+	}
+	var optionsArray = [];
+	var formOptionsArray = req.body.options;
+	formOptionsArray.forEach(function(element, index, array) {
+		if (element != '') {
+			optionsArray.push({
+				option: element,
+				voters: []
+			});
+		}
+	});
+	if (optionsArray.length < 2) {
+		res.send({
+			error: true,
+			message: "Please fill in at least two options"
+		});
+		return;
+	} else {
+		mongo.connect(URL, function(err, db) {
+			if (err) { throw err; }
+			var collection = db.collection('polls');
+			var pollObject = {question: questionString, options: optionsArray, userID: userID };
+            collection.insert(pollObject, function(err, data){
+				if (err) {
+					res.send({
+						error: true,
+						message: "Server error. Sorry!"
+					});
+                    db.close();
+                    throw err;
+                }
+                res.send({
+					error: false,
+					message: "Poll " + questionString + " successfully submitted!"
+				});
+				console.log("Poll inserted! Data is: " + JSON.stringify(data));
+                db.close();
+            });
+		});
+	}
 });
 
 app.post('/logout', function (req, res) {

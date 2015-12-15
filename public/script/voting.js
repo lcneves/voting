@@ -14,16 +14,9 @@
         });
     }]);
     app.controller('PollFormController', ['$scope', function($scope) {
-        var makeOption = function() {
-            var option = {
-                name: '',
-                voters: []
-            }
-            return option;
-        }
         $scope.reset = function() {
-            var optionOne = makeOption();
-            var optionTwo = makeOption();
+            var optionOne = '';
+            var optionTwo = '';
             $scope.form = {
                 question: '',
                 options: [
@@ -33,7 +26,7 @@
             }
         }
         $scope.addOption = function() {
-            var newOption = makeOption();
+            var newOption = '';
             $scope.form.options.push(newOption);
         }
         $scope.submit = function() {
