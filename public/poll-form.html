@@ -1,0 +1,43 @@
+<style>
+    #poll-form-panel {
+        display: none;
+    }
+    #poll-form-submit-div {
+        text-align: center;
+    }
+    #poll-form-question {
+        font-size: 130%;
+        height: 2.7em;
+    }
+    #poll-form-message {
+        text-align: center;
+    }
+    .poll-form-button {
+        width: 6em;
+    }
+</style>
+<div id="poll-form-panel" class="poll-panel panel panel-info">
+    <div class="panel-heading"><h4>New poll</h4></div>
+    <div class="panel-body">
+        <form name="poll-form" ng-controller="PollFormController" ng-submit="submit()">
+            <div class="form-group">
+                <label class="sr-only" for="poll-form-question">Question:</label>
+                <input id="poll-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
+            </div>
+            <div class="form-group" ng-repeat="option in form.options">
+                <label class="sr-only" for="poll-option">Option:</label>
+                <input class="form-control" type="text" name="poll-option" ng-model="option.name" placeholder="Option"/>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-default btn-block" ng-click="addOption()">Add option</button>
+            </div>
+            <div id="poll-form-submit-div" class="form-group">
+                <button type="button" class="poll-form-button btn btn-warning" ng-click="reset()">Clear</button>
+                <button type="submit" class="poll-form-button btn btn-success">Submit</button>
+            </div>
+            <div>
+                <p id="poll-form-message" class="message" ng-class="{true:'text-danger', false:'text-success'}[messageError]">{{message}}</p>
+            </div>
+        </form>
+    </div>
+</div>

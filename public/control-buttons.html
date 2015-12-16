@@ -1,0 +1,48 @@
+<script>
+    $(document).ready(function() {
+        $("#my-polls-pill").click(function() {
+            if ($("#my-polls-panel").css('display') == 'none') {
+                $("#my-polls-pill").addClass("active");
+                $("#add-polls-pill").removeClass("active");
+                $("#poll-form-panel").css('z-index', '-1').removeClass("animated fadeInDown").addClass("animated fadeOutUp");
+                window.setTimeout(function() {
+                    $("#poll-form-panel").removeClass("animated fadeOutUp").css('display', 'none');
+                    $("#my-polls-panel").css({'display': 'block', 'z-index': '-1'}).addClass("animated fadeInDown");
+                }, 700);
+                window.setTimeout(function() {
+                    $("#my-polls-panel").css('z-index', '0');
+                }, 1400);
+            }
+        });
+        $("#add-polls-pill").click(function() {
+            if ($("#poll-form-panel").css('display') == 'none') {
+                $("#add-polls-pill").addClass("active");
+                $("#my-polls-pill").removeClass("active");
+                $("#my-polls-panel").css('z-index', '-1').removeClass("animated fadeInDown").addClass("animated fadeOutUp");
+                window.setTimeout(function() {
+                    $("#my-polls-panel").removeClass("animated fadeOutUp").css('display', 'none');
+                    $("#poll-form-panel").css({'display': 'block', 'z-index': '-1'}).addClass("animated fadeInDown");
+                }, 700);
+                window.setTimeout(function() {
+                    $("#poll-form-panel").css('z-index', '0');
+                }, 1400);
+            }
+        });
+    });
+</script>
+<style>
+    #control-buttons {
+        text-align: center;
+        margin: 1em auto;
+        max-width: 50em;
+    }
+    .control-button {
+        margin: 0.4em;
+    }
+</style>
+<div id="control-buttons">
+    <ul class="nav nav-pills nav-success nav-justified">
+        <li id="my-polls-pill" role="presentation" class="active"><a href="#">My polls</a></li>
+        <li id="add-polls-pill" role="presentation"><a href="#">Add new poll</a></li>
+    </ul>
+</div>

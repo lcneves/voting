@@ -111,63 +111,65 @@ app.post('/check', function (req, res) {
 });
 
 app.post('/new-poll', function (req, res) {
-	console.log(util.inspect(req.body));
-	var questionString = req.body.question;
-	if (questionString == ''){
-		res.send({
-			error: true,
-			message: "Your poll needs a question"
-		});
-		return;
-	}
-	var userID;
-	if (req.user) { userID = objectID(req.user._id); }
-	else {
-		res.send({
-			error: true,
-			message: "User is not authenticated. Please log in!"
-		});
-		return;
-	}
-	var optionsArray = [];
-	var formOptionsArray = req.body.options;
-	formOptionsArray.forEach(function(element, index, array) {
-		if (element != '') {
-			optionsArray.push({
-				option: element,
-				voters: []
-			});
-		}
-	});
-	if (optionsArray.length < 2) {
-		res.send({
-			error: true,
-			message: "Please fill in at least two options"
-		});
-		return;
-	} else {
-		mongo.connect(URL, function(err, db) {
-			if (err) { throw err; }
-			var collection = db.collection('polls');
-			var pollObject = {question: questionString, options: optionsArray, userID: userID };
+    console.log(util.inspect(req));
+    console.log(util.inspect(req.body));
+    var questionString = req.body.question;
+    if (questionString == ''){
+        res.send({
+            error: true,
+            message: "Your poll needs a question"
+        });
+        return;
+    }
+    var userID;
+    if (req.user) { userID = objectID(req.user._id); }
+    else {
+        res.send({
+            error: true,
+            message: "User is not authenticated. Please log in!"
+        });
+        return;
+    }
+    var optionsArray = [];
+    var formOptionsArray = JSON.parse(req.body.options);
+    formOptionsArray.forEach(function(element, index, array) {
+        if (element.name != '') {
+            optionsArray.push({
+                option: element.name,
+                voters: []
+            });
+        }
+    });
+    console.log(JSON.stringify(optionsArray));
+    if (optionsArray.length < 2) {
+        res.send({
+            error: true,
+            message: "Please fill in at least two options"
+        });
+        return;
+    } else {
+        mongo.connect(URL, function(err, db) {
+            if (err) { throw err; }
+            var collection = db.collection('polls');
+            var pollObject = {question: questionString, options: optionsArray, userID: userID };
             collection.insert(pollObject, function(err, data){
-				if (err) {
-					res.send({
-						error: true,
-						message: "Server error. Sorry!"
-					});
+                if (err) {
+                    res.send({
+                        error: true,
+                        message: "Server error. Sorry!"
+                    });
                     db.close();
                     throw err;
                 }
                 res.send({
-					error: false,
-					message: "Poll " + questionString + " successfully submitted!"
-				});
-				console.log("Poll inserted! Data is: " + JSON.stringify(data));
+                    error: false,
+                    message: "Poll " + questionString + " successfully submitted!"
+                });
+                console.log("Poll inserted! Data is: " + JSON.stringify(data));
                 db.close();
             });
-		});
-	}
+        });
+    }
 });
 
 app.post('/logout', function (req, res) {
