@@ -94,9 +94,9 @@
                                     <label class="sr-only" for="poll-question">Question:</label>
                                     <input id="poll-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
                                 </div>
-                                <div class="form-group" ng-repeat="option in form.options track by $index">
+                                <div class="form-group" ng-repeat="option in form.options">
                                     <label class="sr-only" for="poll-option">Option:</label>
-                                    <input class="form-control" type="text" name="poll-option" ng-model="option" placeholder="Option"/>
+                                    <input class="form-control" type="text" name="poll-option" ng-model="option.name" placeholder="Option"/>
                                 </div>
                                 <div class="form-group">
                                     <button type="button" class="btn btn-default btn-block" ng-click="addOption()">Add option</button>

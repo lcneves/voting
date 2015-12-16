@@ -111,7 +111,7 @@ app.post('/check', function (req, res) {
 });
 
 app.post('/new-poll', function (req, res) {
-	console.log(util.inspect(req));
+	console.log(util.inspect(req.body));
 	var questionString = req.body.question;
 	if (questionString == ''){
 		res.send({
