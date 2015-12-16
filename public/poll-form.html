@@ -22,7 +22,7 @@
         <form name="poll-form" ng-controller="PollFormController" ng-submit="submit()">
             <div class="form-group">
                 <label class="sr-only" for="poll-form-question">Question:</label>
-                <input id="poll-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
+                <input id="poll-form-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
             </div>
             <div class="form-group" ng-repeat="option in form.options">
                 <label class="sr-only" for="poll-option">Option:</label>
