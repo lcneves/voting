@@ -12,14 +12,11 @@
     #poll-form-message {
         text-align: center;
     }
-    .poll-form-button {
-        width: 6em;
-    }
 </style>
-<div id="poll-form-panel" class="poll-panel panel panel-info">
-    <div class="panel-heading"><h4>New poll</h4></div>
+<div class="poll-panel panel panel-info">
+    <div class="panel-heading"><h3 class="panel-title">New poll</h3></div>
     <div class="panel-body">
-        <form name="poll-form" ng-controller="PollFormController" ng-submit="submit()">
+        <form name="poll-form" ng-submit="submit()">
             <div class="form-group">
                 <label class="sr-only" for="poll-form-question">Question:</label>
                 <input id="poll-form-question" class="form-control" type="text" name="question" ng-model="form.question" placeholder="Question"/>
@@ -32,8 +29,8 @@
                 <button type="button" class="btn btn-default btn-block" ng-click="addOption()">Add option</button>
             </div>
             <div id="poll-form-submit-div" class="form-group">
-                <button type="button" class="poll-form-button btn btn-warning" ng-click="reset()">Clear</button>
-                <button type="submit" class="poll-form-button btn btn-success">Submit</button>
+                <button type="button" class="poll-button btn btn-warning" ng-click="reset()">Clear</button>
+                <button type="submit" class="poll-button btn btn-success">Submit</button>
             </div>
             <div>
                 <p id="poll-form-message" class="message" ng-class="{true:'text-danger', false:'text-success'}[messageError]">{{message}}</p>

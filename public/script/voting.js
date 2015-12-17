@@ -13,7 +13,35 @@
             $scope.$apply();
         });
     }]);
-    app.controller('PollFormController', ['$scope', function($scope) {
+    app.controller('MyPollsController', ['$scope', function($scope) {
+        // Function to retrieve "My Polls"
+        var checkMyPolls = function() {
+            jQuery.post("my-polls", function(data) {
+                $scope.MyPollsMessageError = data.error;
+                $scope.MyPollsMessage = data.message;
+                if (!data.error) {
+                    $scope.MyPollsResults = JSON.parse(data.results);
+                    if ($scope.MyPollsResults.length > 0) {$scope.hasPolls = true;}
+                    else {$scope.hasPolls = false;}
+                }
+                $scope.$apply();
+            });
+        };
+        
+        // Function to delete a poll from the "My Polls" list:
+        $scope.deletePoll = function(id) {
+            var idObject = {id: id};
+            jQuery.post("delete-poll", idObject, function(data) {
+                $scope.MyPollsMessageError = data.error;
+                $scope.MyPollsMessage = data.message;
+                if (!data.error) {
+                    checkMyPolls();
+                }
+                $scope.$apply();
+            });
+        };
+        
+        // The code below serves the "Add new poll" form
         var makeOption = function() {
             return {name: ''};
         }
@@ -41,11 +69,16 @@
                 if (data.message) {
                     $scope.messageError = data.error;
                     $scope.message = data.message;
-                    if (!data.error) {$scope.reset();}
+                    if (!data.error) {
+                        $scope.reset();
+                        checkMyPolls();
+                    }
                     $scope.$apply();
                 }
             }, "json");
         };
+        
         $scope.reset();
+        checkMyPolls();
     }]);
 })();

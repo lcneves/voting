@@ -31,6 +31,10 @@
                 position: relative;
                 animation-duration: 0.7s;
             }
+            .poll-button {
+                width: 6em;
+                margin: 0 0.4em;
+            }
         </style>
         <script>
         </script>
@@ -47,8 +51,10 @@
                 </div>
                 <div id="logged" ng-show="isLogged">
                     <div ng-include="'control-buttons.html'"></div>
-                    <div ng-include="'poll-form.html'"></div>
-                    <div ng-include="'my-polls.html'"></div>
+                    <div ng-controller="MyPollsController">
+                        <div id="poll-form-panel" ng-include="'poll-form.html'"></div>
+                        <div id="my-polls-panel" ng-include="'my-polls.html'"></div>
+                    </div>
                 </div>
             </div>
         </div>

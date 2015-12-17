@@ -110,6 +110,96 @@ app.post('/check', function (req, res) {
     }
 });
 
+app.post('/my-polls', function (req, res) {
+    if (req.user) {
+        var userID = objectID(req.user._id);
+        mongo.connect(URL, function(err, db) {
+            var errorFunction = function(err) {
+                res.send({
+                    error: true,
+                    message: "Server error. Sorry!"
+                });
+                db.close();
+                console.log('Error! ' + JSON.stringify(err));
+                throw err;
+            };
+            if (err) { errorFunction(err); }
+            var collection = db.collection('polls');
+            collection.find({ userID: userID }, function(err, data){
+                if (err) { errorFunction(err); }
+                data.toArray(function(err, array) {
+                    if (err) { errorFunction(err); }
+                    res.send({
+                        error: false,
+                        message: "",
+                        results: JSON.stringify(array)
+                    });
+                });
+            });
+        });
+    } else {
+        res.send({
+            error: true,
+            message: "User is not authenticated. Please log in!"
+        });
+    }
+});
+
+app.post('/delete-poll', function (req, res) {
+    if (req.user) {
+        var userID = objectID(req.user._id);
+        if (req.body.id) {
+            console.log(util.inspect(req.body.id));
+            var pollID = objectID(req.body.id)
+        } else {
+            res.send({
+                error: true,
+                message: "Error: invalid poll ID!"
+            });
+            return;
+        }
+        mongo.connect(URL, function(err, db) {
+            var errorFunction = function(err) {
+                res.send({
+                    error: true,
+                    message: "Server error. Sorry!"
+                });
+                db.close();
+                console.log('Error! ' + JSON.stringify(err));
+            };
+            if (err) { errorFunction(err); }
+            var collection = db.collection('polls');
+            collection.findOne({ _id: pollID }, function(err, data){
+                if (err) { errorFunction(err); }
+                if (JSON.stringify(data.userID) == JSON.stringify(userID)) {
+                    collection.remove(
+                        {_id: pollID},
+                        function(err) {
+                            if (err) { errorFunction(err); }
+                            res.send({
+                                error: false,
+                                message: "Poll deleted!"
+                            });
+                            db.close();
+                        }
+                    );
+                } else {
+                    res.send({
+                        error: true,
+                        message: "You don't have permission to delete this poll. Try logging in again!"
+                    });
+                    db.close();
+                }
+            });
+        });
+    } else {
+        res.send({
+            error: true,
+            message: "User is not authenticated. Please log in!"
+        });
+    }
+});
+
 app.post('/new-poll', function (req, res) {
     console.log(util.inspect(req));
     console.log(util.inspect(req.body));
