@@ -18,7 +18,7 @@
                 <h4 class="panel-title">{{result.question}}</h4>
             </div>
             <div class="panel-body">
-                <button type="button" class="poll-button btn btn-success">View poll</button>
+                <button type="button" class="poll-button btn btn-success" ng-click="viewPoll(result._id)">View poll</button>
                 <button type="button" class="poll-button btn btn-danger" ng-click="deletePoll(result._id)">Delete</button>
             </div>
             

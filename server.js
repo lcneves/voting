@@ -121,7 +121,7 @@ app.post('/my-polls', function (req, res) {
                 });
                 db.close();
                 console.log('Error! ' + JSON.stringify(err));
-                throw err;
+                return;
             };
             if (err) { errorFunction(err); }
             var collection = db.collection('polls');
@@ -145,11 +145,51 @@ app.post('/my-polls', function (req, res) {
     }
 });
 
+app.post('/get-poll', function (req, res) {
+    var userID = req.user ? objectID(req.user._id) : false;
+    if (req.body.poll) {
+        var pollID = objectID(req.body.poll);
+        mongo.connect(URL, function(err, db) {
+            var errorFunction = function(err) {
+                res.send({
+                    error: true,
+                    message: "Server error. Sorry!"
+                });
+                db.close();
+                console.log('Error! ' + JSON.stringify(err));
+                return;
+            };
+            if (err) { errorFunction(err); }
+            var collection = db.collection('polls');
+            collection.findOne({ _id: pollID }, function(err, data){
+                if (err) { errorFunction(err); }
+                if (Object.getOwnPropertyNames(data).length > 0) {
+                    res.send({
+                        error: false,
+                        message: "",
+                        poll: data
+                    });
+                } else {
+                    res.send({
+                        error: true,
+                        message: "Poll not found; please check your URL (link)"
+                    });
+                }
+                db.close();
+            });
+        });
+    } else {
+        res.send({
+            error: true,
+            message: "Malformed request; please check your URL (link)"
+        });
+    }
+});
+
 app.post('/delete-poll', function (req, res) {
     if (req.user) {
         var userID = objectID(req.user._id);
         if (req.body.id) {
-            console.log(util.inspect(req.body.id));
             var pollID = objectID(req.body.id)
         } else {
             res.send({
@@ -212,7 +252,11 @@ app.post('/new-poll', function (req, res) {
         return;
     }
     var userID;
-    if (req.user) { userID = objectID(req.user._id); }
+    var userRealName;
+    if (req.user) {
+        userID = objectID(req.user._id);
+        userRealName = req.user.realname;
+    }
     else {
         res.send({
             error: true,
@@ -241,7 +285,7 @@ app.post('/new-poll', function (req, res) {
         mongo.connect(URL, function(err, db) {
             if (err) { throw err; }
             var collection = db.collection('polls');
-            var pollObject = {question: questionString, options: optionsArray, userID: userID };
+            var pollObject = {question: questionString, options: optionsArray, userID: userID, userRealName: userRealName };
             collection.insert(pollObject, function(err, data){
                 if (err) {
                     res.send({

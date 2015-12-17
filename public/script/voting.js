@@ -1,6 +1,22 @@
 (function() {
     var app = angular.module('votingModule', ['loginModule']);
-    app.controller('MainController', ['$scope', 'loginStatus', function($scope, loginStatus) {
+    app.config(function($locationProvider) {
+        $locationProvider.html5Mode(true).hashPrefix('!');
+    });
+    app.controller('MainController', ['$scope', '$location', 'loginStatus', function($scope, $location, loginStatus) {
+        var pollSearch = $location.search();
+        $scope.hasPollSearch = !jQuery.isEmptyObject(pollSearch);
+        console.log($scope.hasPollSearch);
+        if ($scope.hasPollSearch) {
+            jQuery.post("get-poll", pollSearch, function(data) {
+                $scope.getPollMessageError = data.error;
+                $scope.getPollMessage = data.message;
+                if (!data.error) {
+                    $scope.poll = JSON.parse(data.poll);
+                }
+                $scope.$apply();
+            });
+        }
         $scope.receivedLogin = false;
         $scope.isLogged = false;
         $scope.user = '';
@@ -13,7 +29,7 @@
             $scope.$apply();
         });
     }]);
-    app.controller('MyPollsController', ['$scope', function($scope) {
+    app.controller('MyPollsController', ['$scope', '$location', function($scope, $location) {
         // Function to retrieve "My Polls"
         var checkMyPolls = function() {
             jQuery.post("my-polls", function(data) {
@@ -39,6 +55,11 @@
                 }
                 $scope.$apply();
             });
+        };
+        
+        // Function to view a poll from the "My Polls" list:
+        $scope.viewPoll = function(id) {
+            $location.search({poll: id});
         };
         
         // The code below serves the "Add new poll" form
