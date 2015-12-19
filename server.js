@@ -1,4 +1,4 @@
-var PORT = 8080,
+var PORT = process.env.PORT || 8080,
     URL = 'mongodb://localhost:27017/voting',
     SESSION_KEY = 'ThisIsN0tAKeyStup0d',
     BCRIPT_COST = 8,
