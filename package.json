@@ -1,5 +1,5 @@
 {
-  "name": "voting-app",
+  "name": "yourvote",
   "version": "1.0.0",
   "description": "Lucas Neves' voting app exercise for freeCodeCamp",
   "main": "server.js",

@@ -1,5 +1,6 @@
 var PORT = process.env.PORT || 8080,
-    URL = 'mongodb://localhost:27017/voting',
+//    URL = 'mongodb://localhost:27017/voting', //local
+    URL = 'mongodb://yourvote:yourvotepassword@ds061474.mongolab.com:61474/yourvote',
     SESSION_KEY = 'ThisIsN0tAKeyStup0d',
     BCRIPT_COST = 8,
     mongo = require('mongodb').MongoClient,
