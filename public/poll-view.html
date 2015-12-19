@@ -1,0 +1,38 @@
+<style>
+    #poll-view-author {
+        font-size: 80%;
+    }
+    canvas {
+        max-width: 22em;
+    }
+    .well, #options-list {
+        display: inline-block;
+        vertical-align: bottom;
+    }
+    #options-list {
+    margin-left: 1.5em;
+    max-width: 21em;
+    }
+    .vote-button {
+        padding: 0.1em 0.5em !important;
+        margin: auto 0.5em;
+    }
+    #poll-link {
+        font-family: monospace;
+    }
+</style>
+<div class="poll-panel panel panel-info">
+    <div class="panel-heading"><h3 class="panel-title">{{poll.question}} <span id="poll-view-author">— a poll by {{poll.userRealName}}</span></h3></div>
+    <div class="panel-body">
+        <div id="chart-well" class="well"></div>
+        <ul id="options-list" class="list-group">
+            <li class="list-group-item" ng-repeat="option in poll.options">
+                <i class="fa fa-square" ng-style="{color: getColor($index)}"></i> {{option.option}} <button type="button" class="vote-button btn btn-default" ng-click="addVote($index)">vote</button><span class="badge">{{option.voters.length}}</span>
+            </li>
+        </ul>
+        <p>Link to this poll: <span id="poll-link">{{pollLink}}</span></p>
+        <p class="text-center text-danger">{{pollViewMessage}}</p>
+    </div>
+</div>
+
+

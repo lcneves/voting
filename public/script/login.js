@@ -63,7 +63,7 @@
                     $scope.message = data.message;
                     $scope.$apply();
                 } else {
-                    window.location.href = "/";
+                    window.location.reload();
                 }
             });
         };

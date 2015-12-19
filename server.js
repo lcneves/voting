@@ -148,7 +148,15 @@ app.post('/my-polls', function (req, res) {
 app.post('/get-poll', function (req, res) {
     var userID = req.user ? objectID(req.user._id) : false;
     if (req.body.poll) {
-        var pollID = objectID(req.body.poll);
+        try {
+            var pollID = objectID(req.body.poll);
+        } catch(err) {
+            res.send({
+                error: true,
+                message: "Poll not found; please check your URL (link)"
+            });
+            return;
+        }
         mongo.connect(URL, function(err, db) {
             var errorFunction = function(err) {
                 res.send({
@@ -163,7 +171,7 @@ app.post('/get-poll', function (req, res) {
             var collection = db.collection('polls');
             collection.findOne({ _id: pollID }, function(err, data){
                 if (err) { errorFunction(err); }
-                if (Object.getOwnPropertyNames(data).length > 0) {
+                if (typeof(data) == 'object' && data != null && Object.getOwnPropertyNames(data).length > 0) {
                     res.send({
                         error: false,
                         message: "",
@@ -241,8 +249,6 @@ app.post('/delete-poll', function (req, res) {
 });
 
 app.post('/new-poll', function (req, res) {
-    console.log(util.inspect(req));
-    console.log(util.inspect(req.body));
     var questionString = req.body.question;
     if (questionString == ''){
         res.send({
@@ -274,7 +280,6 @@ app.post('/new-poll', function (req, res) {
             });
         }
     });
-    console.log(JSON.stringify(optionsArray));
     if (optionsArray.length < 2) {
         res.send({
             error: true,
@@ -292,18 +297,37 @@ app.post('/new-poll', function (req, res) {
                         error: true,
                         message: "Server error. Sorry!"
                     });
+                    console.log('Error inserting new poll! ' + err);
                     db.close();
-                    throw err;
                 }
                 res.send({
                     error: false,
-                    message: "Poll " + questionString + " successfully submitted!"
+                    message: "Poll " + questionString + " successfully submitted!",
+                    pollID: data.insertedIds[0]
                 });
-                console.log("Poll inserted! Data is: " + JSON.stringify(data));
                 db.close();
             });
         });
     }
+});
+
+app.post('/add-vote', function (req, res) {
+    var optionIndex = parseInt(req.body.index);
+    var optionKey = 'options.' + req.body.index + '.voters';
+    var pollID = objectID(req.body.pollID);
+    var userID = req.user ? objectID(req.user._id) : "anonymous";
+    var pushObject = {};
+    pushObject[optionKey] = userID;
+    mongo.connect(URL, function(err, db) {
+        if (err) { console.log(err); db.close(); return; }
+        
+        var collection = db.collection('polls');
+        collection.update({_id:pollID}, {'$push': pushObject}, function(err, data) {
+            if (err) { console.log(err); db.close(); return; }
+            res.end();
+            db.close();
+        });
+    });
 });
 
 app.post('/logout', function (req, res) {
@@ -336,23 +360,24 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-    console.log('Called serialize!');
     done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
-    console.log('Called deserialize!');
     mongo.connect(URL, function(err, db) {
         if (err) { throw err; }
         var collection = db.collection('users');
         collection.findOne({_id: objectID(id)}, function(err, user) {
             if (err) { throw err; }
             if (user) {
-                console.log('User found! _id: ' + id);
-                done(err, user);
+                var userInfo = {
+                    _id: user._id,
+                    username: user.username,
+                    realname: user.realname
+                }
+                done(err, userInfo);
                 db.close();
             } else {
-                console.log('User not found! _id: ' + id);
                 db.close();
             }
         });
