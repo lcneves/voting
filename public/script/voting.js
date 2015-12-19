@@ -68,6 +68,12 @@
                 getPoll();
             });
         };
+        $scope.submitNewOption = function(newOption) {
+            $scope.newOption = {value: ''};
+            jQuery.post("add-option", {option: newOption, pollID: $scope.poll._id}, function(data) {
+                getPoll();
+            });
+        }
         $scope.receivedLogin = false;
         $scope.isLogged = false;
         $scope.user = '';

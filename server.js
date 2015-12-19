@@ -320,7 +320,6 @@ app.post('/add-vote', function (req, res) {
     pushObject[optionKey] = userID;
     mongo.connect(URL, function(err, db) {
         if (err) { console.log(err); db.close(); return; }
-        
         var collection = db.collection('polls');
         collection.update({_id:pollID}, {'$push': pushObject}, function(err, data) {
             if (err) { console.log(err); db.close(); return; }
@@ -328,6 +327,28 @@ app.post('/add-vote', function (req, res) {
             db.close();
         });
     });
+});
+
+app.post('/add-option', function (req, res) {
+    if (req.body.option) {
+        var optionKey = 'options';
+        var pollID = objectID(req.body.pollID);
+        var userID = req.user ? objectID(req.user._id) : "anonymous";
+        var pushObject = {};
+        pushObject[optionKey] = {
+            option: req.body.option,
+            voters: [userID]
+        };
+        mongo.connect(URL, function(err, db) {
+            if (err) { console.log(err); db.close(); return; }
+            var collection = db.collection('polls');
+            collection.update({_id:pollID}, {'$push': pushObject}, function(err, data) {
+                if (err) { console.log(err); db.close(); return; }
+                res.end();
+                db.close();
+            });
+        });
+    } else {res.end()}
 });
 
 app.post('/logout', function (req, res) {

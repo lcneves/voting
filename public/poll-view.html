@@ -20,6 +20,9 @@
     #poll-link {
         font-family: monospace;
     }
+    #new-option {
+        width: 10em;
+    }
 </style>
 <div class="poll-panel panel panel-info">
     <div class="panel-heading"><h3 class="panel-title">{{poll.question}} <span id="poll-view-author">— a poll by {{poll.userRealName}}</span></h3></div>
@@ -28,6 +31,15 @@
         <ul id="options-list" class="list-group">
             <li class="list-group-item" ng-repeat="option in poll.options">
                 <i class="fa fa-square" ng-style="{color: getColor($index)}"></i> {{option.option}} <button type="button" class="vote-button btn btn-default" ng-click="addVote($index)">vote</button><span class="badge">{{option.voters.length}}</span>
+            </li>
+            <li class="list-group-item">
+                <form name="new-option-form" class="form-inline" ng-submit="submitNewOption(newOption.value)">
+                    <div class="form-group">
+                        <label class="sr-only" for="new-option">New option:</label>
+                        <input id="new-option" class="form-control" type="text" name="new-option" ng-model="newOption.value" placeholder="Your new option"/>
+                    </div>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
             </li>
         </ul>
         <p>Link to this poll: <span id="poll-link">{{pollLink}}</span></p>
